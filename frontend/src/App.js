@@ -1,34 +1,44 @@
-import logo from './logo.svg';
 import './App.css';
+import SetupForm from "./SetupForm";
+import LoadProjectForm from "./LoadProjectForm";
 import DrawingCanvas from './DrawingCanvas';
-import SetupForm from "./SetupForm.js";
 import { useState } from "react";
 
 function App() {
+  const [page, setPage] = useState("home"); // home, new, load, drawing
   const [project, setProject] = useState(null);
 
   return (
     <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
       <h1>Drawing Classifier</h1>
-      {!project ? (
-        <SetupForm onSetup={setProject} />
-      ) : (
-        <DrawingCanvas project={project} />
-      )}    
+
+      {page === "home" && (
+        <div>
+          <button onClick={() => setPage("new")}>Create New Project</button>
+          <button onClick={() => setPage("load")}>Load Existing Project</button>
+        </div>
+      )}
+
+      {page === "new" && (
+        <SetupForm 
+          onSetup={(proj) => { setProject(proj); setPage("drawing"); }} 
+          onBack={() => setPage("home")}
+        />
+      )}
+
+      {page === "load" && (
+        <LoadProjectForm
+          onLoad={(proj) => { setProject(proj); setPage("drawing"); }}
+          onBack={() => setPage("home")}
+        />
+      )}
+
+      {page === "drawing" && project && (
+        <DrawingCanvas 
+          project={project} 
+          onBack={() => setPage("home")}
+        />
+      )}
     </div>
   );
 }
