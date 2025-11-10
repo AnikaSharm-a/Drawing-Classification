@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiFetch } from "./api";
 
 function LoadProjectForm({ onLoad, onBack }) {
   const [projectName, setProjectName] = useState("");
@@ -26,7 +27,7 @@ function LoadProjectForm({ onLoad, onBack }) {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/load-model/", {
+      const res = await apiFetch("/load-model/", {
         method: "POST",
         body: formData,
       });

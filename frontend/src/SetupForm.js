@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiFetch } from "./api";
 
 function SetupForm({ onSetup, onBack }) {
   const [projectName, setProjectName] = useState("");
@@ -19,7 +20,7 @@ function SetupForm({ onSetup, onBack }) {
     }
 
     setChecking(true);
-    const checkRes = await fetch(`http://127.0.0.1:8000/check-project-name/?project_name=${projectName}`);
+    const checkRes = await apiFetch(`/check-project-name/?project_name=${projectName}`);
     const checkData = await checkRes.json();
     setChecking(false);
 
@@ -35,7 +36,7 @@ function SetupForm({ onSetup, onBack }) {
     formData.append("class3", class3);
     formData.append("persistent", persistent);
 
-    const res = await fetch("http://127.0.0.1:8000/init-project/", {
+    const res = await apiFetch("/init-project/", {
       method: "POST",
       body: formData,
     });
