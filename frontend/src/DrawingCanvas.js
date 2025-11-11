@@ -15,6 +15,7 @@ function DrawingCanvas({ project, onBack }) {
     const ctx = canvasRef.current.getContext("2d");
     ctx.lineWidth = 10;
     ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.strokeStyle = "black";
   }, []);
 
@@ -30,17 +31,27 @@ function DrawingCanvas({ project, onBack }) {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasSaved]);
 
+  const getCoords = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    return { x, y };
+  };
+
   const startDrawing = (e) => {
     const ctx = canvasRef.current.getContext("2d");
+    const { x, y } = getCoords(e);
     ctx.beginPath();
-    ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    ctx.moveTo(x, y);
     setIsDrawing(true);
   };
 
   const draw = (e) => {
     if (!isDrawing) return;
     const ctx = canvasRef.current.getContext("2d");
-    ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+    const { x, y } = getCoords(e);
+    ctx.lineTo(x, y);
     ctx.stroke();
   };
 
@@ -196,11 +207,15 @@ function DrawingCanvas({ project, onBack }) {
         ref={canvasRef}
         width={300}
         height={300}
-        style={{ border: "1px solid black", background: "white" }}
-        onMouseDown={startDrawing}
-        onMouseMove={draw}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
+        style={{
+          border: "1px solid black",
+          background: "white",
+          touchAction: "none", // prevents scrolling while drawing on touch screens
+        }}
+        onPointerDown={startDrawing}
+        onPointerMove={draw}
+        onPointerUp={stopDrawing}
+        onPointerLeave={stopDrawing}
       />
       <div style={{ marginTop: "10px" }}>
         {project.classes.map((c, i) => (
